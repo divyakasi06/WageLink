@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WageLink — Work History</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; background: #f4f6f8; }
+        h1 { color: #1a3c6e; }
+        input { display: block; width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; }
+        button { background: #1a3c6e; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        .card { background: white; padding: 20px; border-radius: 8px; margin-top: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .stat { font-size: 28px; font-weight: bold; color: #1a3c6e; }
+        .label { color: #666; font-size: 14px; }
+        a { color: #1a3c6e; }
+    </style>
+</head>
+<body>
+    <h1>WageLink — Work History</h1>
+    <input type="number" id="workerId" placeholder="Enter Worker ID (e.g., 1)" required>
+    <button onclick="loadHistory()">View History</button>
+
+    <div class="card" id="resultCard" style="display:none;">
+        <div class="label">Total Jobs Completed</div>
+        <div class="stat" id="totalJobs">0</div>
+        <br>
+        <div class="label">Total Earned (₹)</div>
+        <div class="stat" id="totalEarned">0</div>
+    </div>
+
+    <p><a href="/index.html">Register as a Worker</a> | <a href="/postJob.html">Post a Job</a></p>
+
+    <script>
+        async function loadHistory() {
+            const workerId = document.getElementById("workerId").value;
+            const response = await fetch(`/api/workHistory?workerId=${workerId}`);
+            const data = await response.json();
+            document.getElementById("totalJobs").innerText = data.totalJobs;
+            document.getElementById("totalEarned").innerText = data.totalEarned;
+            document.getElementById("resultCard").style.display = "block";
+        }
+    </script>
+</body>
+</html>

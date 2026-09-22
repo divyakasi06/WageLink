@@ -42,4 +42,18 @@ public class WageLedgerDAO {
             e.printStackTrace();
         }
     }
+        public String getWorkHistoryJson(int workerId) throws SQLException {
+        String sql = "SELECT COUNT(*) AS total_jobs, SUM(amount_paid) AS total_earned FROM wage_ledger WHERE worker_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, workerId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int totalJobs = rs.getInt("total_jobs");
+                int totalEarned = rs.getInt("total_earned");
+                return "{\"totalJobs\":" + totalJobs + ",\"totalEarned\":" + totalEarned + "}";
+            }
+            return "{\"totalJobs\":0,\"totalEarned\":0}";
+        }
+    }
 }

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WageLink</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; background: #f4f6f8; }
+        h1 { color: #1a3c6e; }
+        input { display: block; width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; }
+        button { background: #1a3c6e; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        #result { margin-top: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>WageLink — Register as a Worker</h1>
+    <form id="registerForm">
+        <input type="text" id="name" placeholder="Full Name" required>
+        <input type="text" id="skill" placeholder="Skill (e.g., Electrician)" required>
+        <input type="text" id="availableDays" placeholder="Available Days (e.g., Mon-Fri)" required>
+        <button type="submit">Register</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById("registerForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const name = document.getElementById("name").value;
+            const skill = document.getElementById("skill").value;
+            const availableDays = document.getElementById("availableDays").value;
+
+            const body = `name=${encodeURIComponent(name)}&skill=${encodeURIComponent(skill)}&availableDays=${encodeURIComponent(availableDays)}`;
+
+            const response = await fetch("/api/registerWorker", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: body
+            });
+            const data = await response.json();
+            document.getElementById("result").innerText = data.status === "success" ? "Registered successfully!" : "Something went wrong.";
+        });
+    </script>
+        <p><a href="/postJob.html">Post a Job instead</a> | <a href="/history.html">View Work History</a></p>
+</body>
+</html>

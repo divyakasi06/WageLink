@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WageLink — Post a Job</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; background: #f4f6f8; }
+        h1 { color: #1a3c6e; }
+        input { display: block; width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; }
+        button { background: #1a3c6e; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        #result { margin-top: 15px; font-weight: bold; }
+        a { color: #1a3c6e; }
+    </style>
+</head>
+<body>
+    <h1>WageLink — Post a Job</h1>
+    <form id="jobForm">
+        <input type="text" id="title" placeholder="Job Title (e.g., House Painting)" required>
+        <input type="text" id="location" placeholder="Location" required>
+        <input type="number" id="wage" placeholder="Wage (₹)" required>
+        <input type="date" id="jobDate" required>
+        <input type="text" id="postedBy" placeholder="Your Name (Employer)" required>
+        <button type="submit">Post Job</button>
+    </form>
+    <div id="result"></div>
+    <p><a href="/index.html">Register as a Worker instead</a> | <a href="/history.html">View Work History</a></p>
+
+    <script>
+        document.getElementById("jobForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const title = document.getElementById("title").value;
+            const location = document.getElementById("location").value;
+            const wage = document.getElementById("wage").value;
+            const jobDate = document.getElementById("jobDate").value;
+            const postedBy = document.getElementById("postedBy").value;
+
+            const body = `title=${encodeURIComponent(title)}&location=${encodeURIComponent(location)}&wage=${encodeURIComponent(wage)}&jobDate=${encodeURIComponent(jobDate)}&postedBy=${encodeURIComponent(postedBy)}`;
+
+            const response = await fetch("/api/postJob", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: body
+            });
+            const data = await response.json();
+            document.getElementById("result").innerText = data.status === "success" ? "Job posted successfully!" : "Something went wrong.";
+        });
+    </script>
+</body>
+</html>
