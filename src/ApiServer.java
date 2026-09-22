@@ -133,6 +133,50 @@ public class ApiServer {
                 sendJson(exchange, 500, "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}");
             }
         }); 
+                // API: list all open jobs (for workers to browse)
+        server.createContext("/api/listJobs", exchange -> {
+            try {
+                JobDAO dao = new JobDAO();
+                String json = dao.getAllJobsJson();
+                sendJson(exchange, 200, json);
+            } catch (SQLException e) {
+                sendJson(exchange, 500, "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}");
+            }
+        });
+
+        // API: worker applies to a job
+        server.createContext("/api/applyToJob", exchange -> {
+            if (!"POST".equals(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(405, -1);
+                return;
+            }
+            String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+            int jobId = Integer.parseInt(getParam(body, "jobId"));
+            int workerId = Integer.parseInt(getParam(body, "workerId"));
+            String appliedDate = getParam(body, "appliedDate");
+
+            try {
+                JobApplicationDAO dao = new JobApplicationDAO();
+                dao.applyToJob(jobId, workerId, appliedDate);
+                sendJson(exchange, 200, "{\"status\":\"success\"}");
+            } catch (SQLException e) {
+                sendJson(exchange, 500, "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}");
+            }
+        });
+
+        // API: get applicants for a specific job (for employer to pick from)
+        server.createContext("/api/jobApplicants", exchange -> {
+            String query = exchange.getRequestURI().getQuery();
+            int jobId = Integer.parseInt(getParam(query, "jobId"));
+
+            try {
+                JobApplicationDAO dao = new JobApplicationDAO();
+                String json = dao.getApplicantsJson(jobId);
+                sendJson(exchange, 200, json);
+            } catch (SQLException e) {
+                sendJson(exchange, 500, "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}");
+            }
+        });
         server.setExecutor(null);
         server.start();
         System.out.println("Server running at http://localhost:8080");

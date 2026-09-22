@@ -25,4 +25,27 @@ public class JobDAO {
             e.printStackTrace();
         }
     }
+        // Returns a JSON array of all posted jobs: [{"id":1,"title":"...","location":"...","wage":800,"jobDate":"...","postedBy":"..."}]
+    public String getAllJobsJson() throws SQLException {
+        String sql = "SELECT id, title, location, wage, job_date, posted_by FROM jobs ORDER BY id DESC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            StringBuilder json = new StringBuilder("[");
+            boolean first = true;
+            while (rs.next()) {
+                if (!first) json.append(",");
+                json.append("{\"id\":").append(rs.getInt("id"))
+                    .append(",\"title\":\"").append(rs.getString("title").replace("\"", "\\\""))
+                    .append("\",\"location\":\"").append(rs.getString("location").replace("\"", "\\\""))
+                    .append("\",\"wage\":").append(rs.getInt("wage"))
+                    .append(",\"jobDate\":\"").append(rs.getDate("job_date"))
+                    .append("\",\"postedBy\":\"").append(rs.getString("posted_by").replace("\"", "\\\""))
+                    .append("\"}");
+                first = false;
+            }
+            json.append("]");
+            return json.toString();
+        }
+    }
 }

@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WageLink &mdash; Browse Jobs</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 550px; margin: 50px auto; padding: 20px; background: #f4f6f8; }
+        h1 { color: #1a3c6e; }
+        input { display: block; width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; }
+        button { background: #1a3c6e; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; }
+        a { color: #1a3c6e; }
+        .job-card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.08); }
+        .job-title { font-weight: bold; font-size: 16px; color: #1a3c6e; }
+        .job-meta { color: #666; font-size: 13px; margin: 5px 0; }
+        .apply-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+        .apply-row input { margin: 0; flex: 1; }
+        .status-msg { font-size: 13px; margin-top: 6px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>WageLink &mdash; Browse Jobs</h1>
+    <p><a href="/index.html">Register as a Worker</a> | <a href="/home.html">Back to Home</a></p>
+    <div id="jobsList">Loading jobs...</div>
+
+    <script>
+        async function loadJobs() {
+            const response = await fetch("/api/listJobs");
+            const jobs = await response.json();
+            const container = document.getElementById("jobsList");
+            if (jobs.length === 0) {
+                container.innerHTML = "<p>No jobs posted yet.</p>";
+                return;
+            }
+            container.innerHTML = jobs.map(job => `
+                <div class="job-card">
+                    <div class="job-title">${job.title}</div>
+                    <div class="job-meta">${job.location} &middot; &#8377;${job.wage} &middot; ${job.jobDate} &middot; Posted by ${job.postedBy}</div>
+                    <div class="apply-row">
+                        <input type="number" placeholder="Your Worker ID" id="workerId-${job.id}">
+                        <button onclick="apply(${job.id})">Apply</button>
+                    </div>
+                    <div class="status-msg" id="status-${job.id}"></div>
+                </div>
+            `).join("");
+        }
+
+        async function apply(jobId) {
+            const workerId = document.getElementById(`workerId-${jobId}`).value;
+            const statusDiv = document.getElementById(`status-${jobId}`);
+            if (!workerId) {
+                statusDiv.style.color = "#b71c1c";
+                statusDiv.innerText = "Enter your Worker ID first.";
+                return;
+            }
+            const today = new Date().toISOString().split("T")[0];
+            const body = `jobId=${jobId}&workerId=${workerId}&appliedDate=${today}`;
+            const response = await fetch("/api/applyToJob", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: body
+            });
+            const data = await response.json();
+            statusDiv.style.color = data.status === "success" ? "#2e7d32" : "#b71c1c";
+            statusDiv.innerText = data.status === "success" ? "Applied successfully!" : "Something went wrong.";
+        }
+
+        loadJobs();
+    </script>
+</body>
+</html>
