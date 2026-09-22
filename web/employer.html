@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WageLink &mdash; Register as an Employer</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; background: #f4f6f8; }
+        h1 { color: #1a3c6e; }
+        input { display: block; width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; }
+        button { background: #1a3c6e; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        #result { margin-top: 15px; font-weight: bold; }
+        a { color: #1a3c6e; }
+    </style>
+</head>
+<body>
+    <h1>WageLink &mdash; Register as an Employer</h1>
+    <form id="employerForm">
+        <input type="text" id="name" placeholder="Your Name / Business Name" required>
+        <input type="text" id="businessType" placeholder="Business Type (e.g., Household, Contractor)" required>
+        <input type="text" id="phone" placeholder="Phone Number" required>
+        <button type="submit">Register as Employer</button>
+    </form>
+    <div id="result"></div>
+    <p><a href="/home.html">Back to Home</a></p>
+
+    <script>
+        document.getElementById("employerForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const name = document.getElementById("name").value;
+            const businessType = document.getElementById("businessType").value;
+            const phone = document.getElementById("phone").value;
+
+            const body = `name=${encodeURIComponent(name)}&businessType=${encodeURIComponent(businessType)}&phone=${encodeURIComponent(phone)}`;
+
+            const response = await fetch("/api/registerEmployer", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: body
+            });
+            const data = await response.json();
+            document.getElementById("result").innerText = data.status === "success" ? "Employer registered successfully! Note your Employer ID from Workbench to post jobs." : "Something went wrong.";
+        });
+    </script>
+</body>
+</html>

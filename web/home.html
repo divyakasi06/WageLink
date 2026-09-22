@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WageLink &mdash; Home</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 650px; margin: 60px auto; padding: 20px; background: #f4f6f8; text-align: center; }
+        h1 { color: #1a3c6e; font-size: 36px; margin-bottom: 5px; }
+        .tagline { color: #555; font-size: 16px; margin-bottom: 30px; }
+        .section-title { text-align: left; font-size: 15px; font-weight: bold; color: #444; margin: 25px 0 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .card { background: white; padding: 25px 15px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); text-decoration: none; color: #1a3c6e; transition: transform 0.15s; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.12); }
+        .card-title { font-size: 16px; font-weight: bold; margin-bottom: 6px; }
+        .card-desc { font-size: 13px; color: #666; }
+        .icon { font-size: 26px; margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+    <h1>WageLink</h1>
+    <p class="tagline">Turning daily work into a verified financial identity for wage earners.</p>
+
+    <div class="section-title">I'm a Worker</div>
+    <div class="grid">
+        <a class="card" href="/index.html">
+            <div class="icon">&#129700;</div>
+            <div class="card-title">Register as a Worker</div>
+            <div class="card-desc">Sign up with your skill and availability</div>
+        </a>
+        <a class="card" href="/history.html">
+            <div class="icon">&#128200;</div>
+            <div class="card-title">View Work History</div>
+            <div class="card-desc">See wage record &amp; loan eligibility</div>
+        </a>
+    </div>
+
+    <div class="section-title">I'm an Employer</div>
+    <div class="grid">
+        <a class="card" href="/employer.html">
+            <div class="icon">&#128188;</div>
+            <div class="card-title">Register as an Employer</div>
+            <div class="card-desc">Sign up your name &amp; business type</div>
+        </a>
+        <a class="card" href="/postJob.html">
+            <div class="icon">&#128203;</div>
+            <div class="card-title">Post a Job</div>
+            <div class="card-desc">List work for nearby workers</div>
+        </a>
+        <a class="card" href="/confirmJob.html">
+            <div class="icon">&#9989;</div>
+            <div class="card-title">Confirm Job Completion</div>
+            <div class="card-desc">Verify payment &amp; work done</div>
+        </a>
+    </div>
+</body>
+</html>

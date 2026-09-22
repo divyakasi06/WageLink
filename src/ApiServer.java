@@ -13,7 +13,7 @@ public class ApiServer {
         // Serve the frontend files from the "web" folder
         server.createContext("/", exchange -> {
             String path = exchange.getRequestURI().getPath();
-            if (path.equals("/")) path = "/index.html";
+            if (path.equals("/")) path = "/home.html";
             File file = new File("web" + path);
             if (file.exists()) {
                 byte[] bytes = java.nio.file.Files.readAllBytes(file.toPath());
@@ -42,6 +42,25 @@ public class ApiServer {
             try {
                 WorkerDAO dao = new WorkerDAO();
                 dao.addWorker(new Worker(name, skill, availableDays));
+                sendJson(exchange, 200, "{\"status\":\"success\"}");
+            } catch (SQLException e) {
+                sendJson(exchange, 500, "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}");
+            }
+        });
+                // API: register an employer
+        server.createContext("/api/registerEmployer", exchange -> {
+            if (!"POST".equals(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(405, -1);
+                return;
+            }
+            String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+            String name = getParam(body, "name");
+            String businessType = getParam(body, "businessType");
+            String phone = getParam(body, "phone");
+
+            try {
+                EmployerDAO dao = new EmployerDAO();
+                dao.addEmployer(new Employer(name, businessType, phone));
                 sendJson(exchange, 200, "{\"status\":\"success\"}");
             } catch (SQLException e) {
                 sendJson(exchange, 500, "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}");
