@@ -68,7 +68,26 @@ public class ApiServer {
                 sendJson(exchange, 500, "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}");
             }
         });
+                // API: employer confirms a job is done and payment made
+        server.createContext("/api/confirmJob", exchange -> {
+            if (!"POST".equals(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(405, -1);
+                return;
+            }
+            String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+            int workerId = Integer.parseInt(getParam(body, "workerId"));
+            int jobId = Integer.parseInt(getParam(body, "jobId"));
+            int amountPaid = Integer.parseInt(getParam(body, "amountPaid"));
+            String completedDate = getParam(body, "completedDate");
 
+            try {
+                WageLedgerDAO dao = new WageLedgerDAO();
+                dao.logPayment(workerId, jobId, amountPaid, completedDate);
+                sendJson(exchange, 200, "{\"status\":\"success\"}");
+            } catch (SQLException e) {
+                sendJson(exchange, 500, "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}");
+            }
+        });
         // API: get work history for a worker
         server.createContext("/api/workHistory", exchange -> {
             String query = exchange.getRequestURI().getQuery(); // e.g. "workerId=1"
