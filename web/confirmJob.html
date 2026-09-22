@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WageLink — Confirm Job Completion</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; background: #f4f6f8; }
+        h1 { color: #1a3c6e; }
+        p.note { background: #eef2f8; padding: 10px 15px; border-radius: 6px; font-size: 14px; color: #444; }
+        input { display: block; width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; }
+        button { background: #1a3c6e; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        #result { margin-top: 15px; font-weight: bold; }
+        a { color: #1a3c6e; }
+    </style>
+</head>
+<body>
+    <h1>WageLink — Confirm Job Completion</h1>
+    <p class="note">Only employers should fill this in — this confirms a job was actually done and paid, and is what builds the worker's verified wage history.</p>
+    <form id="confirmForm">
+        <input type="number" id="workerId" placeholder="Worker ID" required>
+        <input type="number" id="jobId" placeholder="Job ID" required>
+        <input type="number" id="amountPaid" placeholder="Amount Paid (₹)" required>
+        <input type="date" id="completedDate" required>
+        <button type="submit">Confirm & Log Payment</button>
+    </form>
+    <div id="result"></div>
+    <p><a href="/index.html">Register as a Worker</a> | <a href="/postJob.html">Post a Job</a> | <a href="/history.html">View Work History</a></p>
+
+    <script>
+        document.getElementById("confirmForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const workerId = document.getElementById("workerId").value;
+            const jobId = document.getElementById("jobId").value;
+            const amountPaid = document.getElementById("amountPaid").value;
+            const completedDate = document.getElementById("completedDate").value;
+
+            const body = `workerId=${workerId}&jobId=${jobId}&amountPaid=${amountPaid}&completedDate=${completedDate}`;
+
+            const response = await fetch("/api/confirmJob", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: body
+            });
+            const data = await response.json();
+            document.getElementById("result").innerText = data.status === "success" ? "Payment confirmed and logged!" : "Something went wrong.";
+        });
+    </script>
+</body>
+</html>
