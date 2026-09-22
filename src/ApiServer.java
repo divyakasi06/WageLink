@@ -101,6 +101,19 @@ public class ApiServer {
                 sendJson(exchange, 500, "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}");
             }
         });
+                // API: get mock credit score for a worker
+        server.createContext("/api/creditScore", exchange -> {
+            String query = exchange.getRequestURI().getQuery();
+            int workerId = Integer.parseInt(getParam(query, "workerId"));
+
+            try {
+                WageLedgerDAO dao = new WageLedgerDAO();
+                String json = dao.getCreditScoreJson(workerId);
+                sendJson(exchange, 200, json);
+            } catch (SQLException e) {
+                sendJson(exchange, 500, "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}");
+            }
+        }); 
         server.setExecutor(null);
         server.start();
         System.out.println("Server running at http://localhost:8080");

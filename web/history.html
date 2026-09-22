@@ -12,6 +12,11 @@
         .stat { font-size: 28px; font-weight: bold; color: #1a3c6e; }
         .label { color: #666; font-size: 14px; }
         a { color: #1a3c6e; }
+        .score-bar { background: #e0e0e0; border-radius: 10px; height: 16px; margin: 10px 0; overflow: hidden; }
+        .score-fill { background: #2e7d32; height: 100%; transition: width 0.3s; }
+        .loan-btn { background: #2e7d32; margin-top: 10px; }
+        .loan-btn:disabled { background: #aaa; cursor: not-allowed; }
+        #loanResult { margin-top: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -25,18 +30,52 @@
         <br>
         <div class="label">Total Earned (&#8377;)</div>
         <div class="stat" id="totalEarned">0</div>
+
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+
+        <div class="label">Credit Readiness Score</div>
+        <div class="stat" id="scoreValue">0</div>
+        <div class="score-bar"><div class="score-fill" id="scoreFill" style="width:0%"></div></div>
+
+        <button class="loan-btn" id="loanBtn" onclick="applyForLoan()">Apply for Loan</button>
+        <div id="loanResult"></div>
     </div>
 
     <p><a href="/index.html">Register as a Worker</a> | <a href="/postJob.html">Post a Job</a> | <a href="/confirmJob.html">Employer: Confirm Job</a></p>
 
     <script>
+        let currentEligible = false;
+        let currentMaxLoan = 0;
+
         async function loadHistory() {
             const workerId = document.getElementById("workerId").value;
-            const response = await fetch(`/api/workHistory?workerId=${workerId}`);
-            const data = await response.json();
-            document.getElementById("totalJobs").innerText = data.totalJobs;
-            document.getElementById("totalEarned").innerText = data.totalEarned;
+
+            const historyResponse = await fetch(`/api/workHistory?workerId=${workerId}`);
+            const historyData = await historyResponse.json();
+            document.getElementById("totalJobs").innerText = historyData.totalJobs;
+            document.getElementById("totalEarned").innerText = historyData.totalEarned;
+
+            const scoreResponse = await fetch(`/api/creditScore?workerId=${workerId}`);
+            const scoreData = await scoreResponse.json();
+            document.getElementById("scoreValue").innerText = scoreData.score + " / 100";
+            document.getElementById("scoreFill").style.width = scoreData.score + "%";
+
+            currentEligible = scoreData.eligible;
+            currentMaxLoan = scoreData.maxLoanAmount;
+
+            document.getElementById("loanResult").innerText = "";
             document.getElementById("resultCard").style.display = "block";
+        }
+
+        function applyForLoan() {
+            const resultDiv = document.getElementById("loanResult");
+            if (currentEligible) {
+                resultDiv.style.color = "#2e7d32";
+                resultDiv.innerText = `Eligible! Based on your wage history, you qualify for up to \u20b9${currentMaxLoan}. This would connect to a partner microfinance lender.`;
+            } else {
+                resultDiv.style.color = "#b71c1c";
+                resultDiv.innerText = "Not enough work history yet. Complete more jobs to build your credit score.";
+            }
         }
     </script>
 </body>

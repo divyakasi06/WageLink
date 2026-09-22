@@ -56,4 +56,25 @@ public class WageLedgerDAO {
             return "{\"totalJobs\":0,\"totalEarned\":0}";
         }
     }
+        // Simple mock credit-readiness score based on job count and consistency
+    public String getCreditScoreJson(int workerId) throws SQLException {
+        String sql = "SELECT COUNT(*) AS total_jobs, SUM(amount_paid) AS total_earned FROM wage_ledger WHERE worker_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, workerId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int totalJobs = rs.getInt("total_jobs");
+                int totalEarned = rs.getInt("total_earned");
+
+                // Simple mock scoring formula: capped at 100
+                int score = Math.min(100, totalJobs * 15 + (totalEarned / 200));
+                boolean eligible = score >= 40; // arbitrary MVP threshold
+                int maxLoanAmount = eligible ? Math.min(10000, totalEarned * 2) : 0;
+
+                return "{\"score\":" + score + ",\"eligible\":" + eligible + ",\"maxLoanAmount\":" + maxLoanAmount + "}";
+            }
+            return "{\"score\":0,\"eligible\":false,\"maxLoanAmount\":0}";
+        }
+    }
 }
