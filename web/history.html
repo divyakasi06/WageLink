@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>WageLink — Work History</title>
+    <title>WageLink &mdash; Work History</title>
     <style>
         body { font-family: Arial, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; background: #f4f6f8; }
         h1 { color: #1a3c6e; }
@@ -15,7 +15,7 @@
     </style>
 </head>
 <body>
-    <h1>WageLink — Work History</h1>
+    <h1>WageLink &mdash; Work History</h1>
     <input type="number" id="workerId" placeholder="Enter Worker ID (e.g., 1)" required>
     <button onclick="loadHistory()">View History</button>
 
@@ -23,21 +23,8 @@
         <div class="label">Total Jobs Completed</div>
         <div class="stat" id="totalJobs">0</div>
         <br>
-        <div class="label">Total Earned (₹)</div>
+        <div class="label">Total Earned (&#8377;)</div>
         <div class="stat" id="totalEarned">0</div>
     </div>
 
-    <p><a href="/index.html">Register as a Worker</a> | <a href="/postJob.html">Post a Job</a> | <a href="/confirmJob.html">Employer: Confirm Job</a></p>
-
-    <script>
-        async function loadHistory() {
-            const workerId = document.getElementById("workerId").value;
-            const response = await fetch(`/api/workHistory?workerId=${workerId}`);
-            const data = await response.json();
-            document.getElementById("totalJobs").innerText = data.totalJobs;
-            document.getElementById("totalEarned").innerText = data.totalEarned;
-            document.getElementById("resultCard").style.display = "block";
-        }
-    </script>
-</body>
-</html>
+    <p><a href="/index.html">Register as a Worker</a>
