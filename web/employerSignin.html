@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WageLink &mdash; Employer Sign In</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; background: #f4f6f8; }
+        h1 { color: #1a3c6e; }
+        input { display: block; width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; }
+        button { background: #1a3c6e; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        #result { margin-top: 15px; font-weight: bold; }
+        a { color: #1a3c6e; }
+        .welcome-card { background: white; padding: 20px; border-radius: 8px; margin-top: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <h1>WageLink &mdash; Employer Sign In</h1>
+    <input type="text" id="phone" placeholder="Enter your phone number" required>
+    <button onclick="signIn()">Sign In</button>
+
+    <div id="result"></div>
+    <div class="welcome-card" id="welcomeCard" style="display:none;">
+        <p>Welcome back, <b id="employerName"></b>!</p>
+        <p>Your Employer ID: <b id="employerId"></b> (Business: <span id="businessType"></span>)</p>
+        <p>
+            <a id="postJobLink" href="#">Post a Job</a> |
+            <a href="/confirmJob.html">Confirm a Job</a>
+        </p>
+    </div>
+
+    <p><a href="/employer.html">New here? Register as an Employer</a> | <a href="/home.html">Back to Home</a></p>
+
+    <script>
+        async function signIn() {
+            const phone = document.getElementById("phone").value;
+            if (!phone) {
+                document.getElementById("result").innerText = "Please enter your phone number.";
+                return;
+            }
+            const response = await fetch(`/api/employerSignin?phone=${encodeURIComponent(phone)}`);
+            const data = await response.json();
+
+            if (data.found) {
+                document.getElementById("result").innerText = "";
+                document.getElementById("employerName").innerText = data.name;
+                document.getElementById("employerId").innerText = data.id;
+                document.getElementById("businessType").innerText = data.businessType;
+                document.getElementById("postJobLink").href = `/postJob.html?employerId=${data.id}&employerName=${encodeURIComponent(data.name)}`;
+                document.getElementById("welcomeCard").style.display = "block";
+            } else {
+                document.getElementById("welcomeCard").style.display = "none";
+                document.getElementById("result").innerText = "No employer found with that phone number. Please register first.";
+            }
+        }
+    </script>
+</body>
+</html>

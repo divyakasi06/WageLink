@@ -23,9 +23,15 @@
         <button type="submit">Post Job</button>
     </form>
     <div id="result"></div>
-    <p><a href="/confirmJob.html">Confirm Job Completion</a> | <a href="/employer.html">Register as Employer</a> | <a href="/home.html">Back to Home</a></p>
+    <p><a href="/confirmJob.html">Confirm Job Completion</a> | <a href="/employerSignin.html">Employer Sign In</a> | <a href="/home.html">Back to Home</a></p>
 
     <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const prefilledName = urlParams.get("employerName");
+        if (prefilledName) {
+            document.getElementById("postedBy").value = decodeURIComponent(prefilledName);
+        }
+
         document.getElementById("jobForm").addEventListener("submit", async function(e) {
             e.preventDefault();
             const title = document.getElementById("title").value;

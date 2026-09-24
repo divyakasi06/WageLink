@@ -29,7 +29,7 @@ public class ApiServer {
         });
 
         // API: register a worker
-        server.createContext("/api/registerWorker", exchange -> {
+                server.createContext("/api/registerWorker", exchange -> {
             if (!"POST".equals(exchange.getRequestMethod())) {
                 exchange.sendResponseHeaders(405, -1);
                 return;
@@ -38,11 +38,25 @@ public class ApiServer {
             String name = getParam(body, "name");
             String skill = getParam(body, "skill");
             String availableDays = getParam(body, "availableDays");
+            String phone = getParam(body, "phone");
 
             try {
                 WorkerDAO dao = new WorkerDAO();
-                dao.addWorker(new Worker(name, skill, availableDays));
+                dao.addWorker(new Worker(name, skill, availableDays, phone));
                 sendJson(exchange, 200, "{\"status\":\"success\"}");
+            } catch (SQLException e) {
+                sendJson(exchange, 500, "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}");
+            }
+        });
+                // API: worker sign-in by phone number
+        server.createContext("/api/workerSignin", exchange -> {
+            String query = exchange.getRequestURI().getQuery();
+            String phone = getParam(query, "phone");
+
+            try {
+                WorkerDAO dao = new WorkerDAO();
+                String json = dao.findByPhoneJson(phone);
+                sendJson(exchange, 200, json);
             } catch (SQLException e) {
                 sendJson(exchange, 500, "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}");
             }
@@ -62,6 +76,19 @@ public class ApiServer {
                 EmployerDAO dao = new EmployerDAO();
                 dao.addEmployer(new Employer(name, businessType, phone));
                 sendJson(exchange, 200, "{\"status\":\"success\"}");
+            } catch (SQLException e) {
+                sendJson(exchange, 500, "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}");
+            }
+        });
+                // API: employer sign-in by phone number
+        server.createContext("/api/employerSignin", exchange -> {
+            String query = exchange.getRequestURI().getQuery();
+            String phone = getParam(query, "phone");
+
+            try {
+                EmployerDAO dao = new EmployerDAO();
+                String json = dao.findByPhoneJson(phone);
+                sendJson(exchange, 200, json);
             } catch (SQLException e) {
                 sendJson(exchange, 500, "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}");
             }
