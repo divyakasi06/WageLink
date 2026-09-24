@@ -1,80 +1,32 @@
 import java.sql.*;
 
-public class WageLedgerDAO {
+public class WorkerDAO {
 
-    public void logPayment(int workerId, int jobId, int amountPaid, String completedDate) throws SQLException {
-        String sql = "INSERT INTO wage_ledger (worker_id, job_id, amount_paid, completed_date) VALUES (?, ?, ?, ?)";
+    public void addWorker(Worker worker) throws SQLException {
+        String sql = "INSERT INTO workers (name, skill, available_days, phone) VALUES (?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, workerId);
-            stmt.setInt(2, jobId);
-            stmt.setInt(3, amountPaid);
-            stmt.setString(4, completedDate);
+            stmt.setString(1, worker.getName());
+            stmt.setString(2, worker.getSkill());
+            stmt.setString(3, worker.getAvailableDays());
+            stmt.setString(4, worker.getPhone());
             stmt.executeUpdate();
         }
     }
 
-    // This is the key feature: total earnings + job count for a worker's "work history"
-    public void printWorkHistory(int workerId) throws SQLException {
-        String sql = "SELECT COUNT(*) AS total_jobs, SUM(amount_paid) AS total_earned FROM wage_ledger WHERE worker_id = ?";
+    // Returns JSON like {"found":true,"id":1,"name":"Ramesh","skill":"Electrician"} or {"found":false}
+    public String findByPhoneJson(String phone) throws SQLException {
+        String sql = "SELECT id, name, skill FROM workers WHERE phone = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, workerId);
+            stmt.setString(1, phone);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                int totalJobs = rs.getInt("total_jobs");
-                int totalEarned = rs.getInt("total_earned");
-                System.out.println("Total jobs completed: " + totalJobs);
-                System.out.println("Total earned: " + totalEarned);
+                return "{\"found\":true,\"id\":" + rs.getInt("id") +
+                       ",\"name\":\"" + rs.getString("name").replace("\"", "\\\"") +
+                       "\",\"skill\":\"" + rs.getString("skill").replace("\"", "\\\"") + "\"}";
             }
-        }
-    }
-
-    public static void main(String[] args) {
-        try {
-            WageLedgerDAO dao = new WageLedgerDAO();
-            // worker_id=1 (Ramesh Kumar), job_id=1 (House Painting), paid 800, completed today
-            dao.logPayment(1, 1, 800, "2026-09-21");
-            System.out.println("Payment logged successfully!");
-
-            dao.printWorkHistory(1);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-        public String getWorkHistoryJson(int workerId) throws SQLException {
-        String sql = "SELECT COUNT(*) AS total_jobs, SUM(amount_paid) AS total_earned FROM wage_ledger WHERE worker_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, workerId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                int totalJobs = rs.getInt("total_jobs");
-                int totalEarned = rs.getInt("total_earned");
-                return "{\"totalJobs\":" + totalJobs + ",\"totalEarned\":" + totalEarned + "}";
-            }
-            return "{\"totalJobs\":0,\"totalEarned\":0}";
-        }
-    }
-        // Simple mock credit-readiness score based on job count and consistency
-    public String getCreditScoreJson(int workerId) throws SQLException {
-        String sql = "SELECT COUNT(*) AS total_jobs, SUM(amount_paid) AS total_earned FROM wage_ledger WHERE worker_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, workerId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                int totalJobs = rs.getInt("total_jobs");
-                int totalEarned = rs.getInt("total_earned");
-
-                // Simple mock scoring formula: capped at 100
-                int score = Math.min(100, totalJobs * 15 + (totalEarned / 200));
-                boolean eligible = score >= 40; // arbitrary MVP threshold
-                int maxLoanAmount = eligible ? Math.min(10000, totalEarned * 2) : 0;
-
-                return "{\"score\":" + score + ",\"eligible\":" + eligible + ",\"maxLoanAmount\":" + maxLoanAmount + "}";
-            }
-            return "{\"score\":0,\"eligible\":false,\"maxLoanAmount\":0}";
+            return "{\"found\":false}";
         }
     }
 }

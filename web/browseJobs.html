@@ -23,6 +23,9 @@
     <div id="jobsList">Loading jobs...</div>
 
     <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const prefilledWorkerId = urlParams.get("workerId") || "";
+
         async function loadJobs() {
             const response = await fetch("/api/listJobs");
             const jobs = await response.json();
@@ -36,7 +39,7 @@
                     <div class="job-title">${job.title}</div>
                     <div class="job-meta">${job.location} &middot; &#8377;${job.wage} &middot; ${job.jobDate} &middot; Posted by ${job.postedBy}</div>
                     <div class="apply-row">
-                        <input type="number" placeholder="Your Worker ID" id="workerId-${job.id}">
+                        <input type="number" placeholder="Your Worker ID" id="workerId-${job.id}" value="${prefilledWorkerId}">
                         <button onclick="apply(${job.id})">Apply</button>
                     </div>
                     <div class="status-msg" id="status-${job.id}"></div>

@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WageLink &mdash; Worker Sign In</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; background: #f4f6f8; }
+        h1 { color: #1a3c6e; }
+        input { display: block; width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; }
+        button { background: #1a3c6e; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        #result { margin-top: 15px; font-weight: bold; }
+        a { color: #1a3c6e; }
+        .welcome-card { background: white; padding: 20px; border-radius: 8px; margin-top: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <h1>WageLink &mdash; Worker Sign In</h1>
+    <input type="text" id="phone" placeholder="Enter your phone number" required>
+    <button onclick="signIn()">Sign In</button>
+
+    <div id="result"></div>
+    <div class="welcome-card" id="welcomeCard" style="display:none;">
+        <p>Welcome back, <b id="workerName"></b>!</p>
+        <p>Your Worker ID: <b id="workerId"></b> (Skill: <span id="workerSkill"></span>)</p>
+        <p>
+            <a id="historyLink" href="#">View My Work History</a> |
+            <a id="browseLink" href="#">Browse Jobs</a>
+        </p>
+    </div>
+
+    <p><a href="/index.html">New here? Register as a Worker</a> | <a href="/home.html">Back to Home</a></p>
+
+    <script>
+        async function signIn() {
+            const phone = document.getElementById("phone").value;
+            if (!phone) {
+                document.getElementById("result").innerText = "Please enter your phone number.";
+                return;
+            }
+            const response = await fetch(`/api/workerSignin?phone=${encodeURIComponent(phone)}`);
+            const data = await response.json();
+
+            if (data.found) {
+                document.getElementById("result").innerText = "";
+                document.getElementById("workerName").innerText = data.name;
+                document.getElementById("workerId").innerText = data.id;
+                document.getElementById("workerSkill").innerText = data.skill;
+                document.getElementById("historyLink").href = `/history.html?workerId=${data.id}`;
+                document.getElementById("browseLink").href = `/browseJobs.html?workerId=${data.id}`;
+                document.getElementById("welcomeCard").style.display = "block";
+            } else {
+                document.getElementById("welcomeCard").style.display = "none";
+                document.getElementById("result").innerText = "No worker found with that phone number. Please register first.";
+            }
+        }
+    </script>
+</body>
+</html>

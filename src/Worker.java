@@ -3,11 +3,13 @@ public class Worker {
     private String name;
     private String skill;
     private String availableDays;
+    private String phone;
 
-    public Worker(String name, String skill, String availableDays) {
+    public Worker(String name, String skill, String availableDays, String phone) {
         this.name = name;
         this.skill = skill;
         this.availableDays = availableDays;
+        this.phone = phone;
     }
 
     public int getId() { return id; }
@@ -16,4 +18,5 @@ public class Worker {
     public String getName() { return name; }
     public String getSkill() { return skill; }
     public String getAvailableDays() { return availableDays; }
+    public String getPhone() { return phone; }
 }
