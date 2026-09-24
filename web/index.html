@@ -18,10 +18,12 @@
         <input type="text" id="name" placeholder="Full Name" required>
         <input type="text" id="skill" placeholder="Skill (e.g., Electrician)" required>
         <input type="text" id="availableDays" placeholder="Available Days (e.g., Mon-Fri)" required>
+        <input type="text" id="phone" placeholder="Phone Number" required>
         <button type="submit">Register</button>
     </form>
     <div id="result"></div>
-    <p><a href="/history.html">View Work History</a> | <a href="/home.html">Back to Home</a></p>
+    <p><a href="/workerSignin.html">Already registered? Sign in</a></p>
+    <p><a href="/home.html">Back to Home</a></p>
 
     <script>
         document.getElementById("registerForm").addEventListener("submit", async function(e) {
@@ -29,8 +31,9 @@
             const name = document.getElementById("name").value;
             const skill = document.getElementById("skill").value;
             const availableDays = document.getElementById("availableDays").value;
+            const phone = document.getElementById("phone").value;
 
-            const body = `name=${encodeURIComponent(name)}&skill=${encodeURIComponent(skill)}&availableDays=${encodeURIComponent(availableDays)}`;
+            const body = `name=${encodeURIComponent(name)}&skill=${encodeURIComponent(skill)}&availableDays=${encodeURIComponent(availableDays)}&phone=${encodeURIComponent(phone)}`;
 
             const response = await fetch("/api/registerWorker", {
                 method: "POST",

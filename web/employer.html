@@ -21,6 +21,7 @@
         <button type="submit">Register as Employer</button>
     </form>
     <div id="result"></div>
+    <p><a href="/employerSignin.html">Already registered? Sign in</a></p>
     <p><a href="/home.html">Back to Home</a></p>
 
     <script>
@@ -38,7 +39,7 @@
                 body: body
             });
             const data = await response.json();
-            document.getElementById("result").innerText = data.status === "success" ? "Employer registered successfully! Note your Employer ID from Workbench to post jobs." : "Something went wrong.";
+            document.getElementById("result").innerText = data.status === "success" ? "Employer registered successfully!" : "Something went wrong.";
         });
     </script>
 </body>

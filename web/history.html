@@ -41,7 +41,7 @@
         <div id="loanResult"></div>
     </div>
 
-    <p><a href="/index.html">Register as a Worker</a> | <a href="/home.html">Back to Home</a></p>
+    <p><a href="/workerSignin.html">Sign In</a> | <a href="/home.html">Back to Home</a></p>
 
     <script>
         let currentEligible = false;
@@ -76,6 +76,13 @@
                 resultDiv.style.color = "#b71c1c";
                 resultDiv.innerText = "Not enough work history yet. Complete more jobs to build your credit score.";
             }
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const prefilledWorkerId = urlParams.get("workerId");
+        if (prefilledWorkerId) {
+            document.getElementById("workerId").value = prefilledWorkerId;
+            loadHistory();
         }
     </script>
 </body>
